@@ -96,7 +96,7 @@ def arp():
 	test = -1
 	""" using the pwd arp-scan """
 	print ACTION + "checking user list  .."
-	os.system("sudo arp-scan -l --interface " + interface + " | sudo grep "+ fip[0] +" >> /tmp/bnt-list.txt")
+	os.system("sudo arp-scan -l --interface " + interface + " | grep "+ fip[0] +" >> /tmp/bnt-list.txt")
 	print ACTION + "reading user list .."
 	#get file line number
 	os.system("wc -l /tmp/bnt-list.txt >> /tmp/bnt-num.txt")
@@ -123,7 +123,7 @@ def arp1():
 	global lastnb
 	ip = get_ip(interface)
 	fip = ip.split('.', 1)
-	output = os.system("sudo arp-scan -l --interface " + interface + " | sudo grep "+ fip[0] +" | wc -l")
+	output = os.system("sudo arp-scan -l --interface " + interface + " | grep "+ fip[0] +" | wc -l")
 	lastnb = output
 
 
