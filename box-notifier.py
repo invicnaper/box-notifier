@@ -82,7 +82,7 @@ def arp():
 	test = -1
 	""" using the pwd arp-scan """
 	print ACTION + "checking user list  .."
-	os.system("sudo arp-scan -l --interface " + interface + " >> /tmp/bnt-list.txt")
+	os.system("sudo arp-scan -l --interface " + interface + " | grep 192 >> /tmp/bnt-list.txt")
 	print ACTION + "reading user list .."
 	#get file line number
 	os.system("wc -l /tmp/bnt-list.txt >> /tmp/bnt-num.txt")
