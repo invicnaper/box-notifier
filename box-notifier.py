@@ -37,6 +37,9 @@
 import os
 import os.path
 import time
+import socket
+import fcntl
+import struct
 import argparse
 import sys
 from gi.repository import Notify
@@ -68,6 +71,7 @@ parser.add_argument('--verbose',
     action='store_true',
     help='verbose flag' )
 parser.add_argument('-i', nargs=1, help="set an interface")
+parser.add_argument('-m', nargs=1, help="set a methode")
 
 def SendNotif(message, title):
 	""" send the notification to gnome """
@@ -77,12 +81,22 @@ def SendNotif(message, title):
 	n.close()
 	Notify.uninit()
 
+def get_ip(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
 def arp():
 	global lastnb
+	ip = get_ip(interface)
+	fip = ip.split('.', 1)
 	test = -1
 	""" using the pwd arp-scan """
 	print ACTION + "checking user list  .."
-	os.system("sudo arp-scan -l --interface " + interface + " | grep 192 >> /tmp/bnt-list.txt")
+	os.system("sudo arp-scan -l --interface " + interface + " | sudo grep "+ fip[0] +" >> /tmp/bnt-list.txt")
 	print ACTION + "reading user list .."
 	#get file line number
 	os.system("wc -l /tmp/bnt-list.txt >> /tmp/bnt-num.txt")
@@ -91,6 +105,27 @@ def arp():
 		test = first.split(' ', 1)	# Split it , so as to have the number
     	lastnb = test[0]
 	
+def nmap():
+	global lastnb
+	test = -1
+	""" using the pwd arp-scan """
+	print ACTION + "checking user list  .."
+	os.system("sudo nmap -T5 -O "+ interface +"-255 >> /tmp/bnt-list.txt")
+	print ACTION + "reading user list .."
+	#get file line number
+	os.system("wc -l /tmp/bnt-list.txt >> /tmp/bnt-num.txt")
+	with open("/tmp/bnt-num.txt", "rb") as f:
+		first = f.readline()     	# Read the first line.
+		test = first.split(' ', 1)	# Split it , so as to have the number
+    	lastnb = test[0]
+
+def arp1():
+	global lastnb
+	ip = get_ip(interface)
+	fip = ip.split('.', 1)
+	output = os.system("sudo arp-scan -l --interface " + interface + " | sudo grep "+ fip[0] +" | wc -l")
+	lastnb = output
+
 
 def checker(nb, t):
 	""" check connection and send notification """
@@ -103,10 +138,9 @@ def checker(nb, t):
 		t = nb
 	if nb < t:
 		if t != 0:
-		
 			SendNotif("someone has disconnected from your router", "New disconnection")
 		t = nb
-	if nb == nbtime:
+	if nb == t:
 		t = nb
 
 	return t
@@ -124,7 +158,7 @@ def checkArp():
 
 def header():
 	""" header informations """
-	print "Box-notifier.py version 0.0.1"
+	print "Box-notifier.py version 0.0.2"
 	print "@author : Naper"
 	print "Designed for Linux"
 	print ""	
@@ -141,15 +175,23 @@ def delTMP():
 args = parser.parse_args()
 
 header()
-if args.i:
+if args.i and args.m:
 	interface = args.i[0]
+	#check if root
+	#if os.geteuid() != 0:
+		#print ERROR + "Please run box-notifier as root"
+		#exit(1)
 	arpi = checkArp()
 	if arpi == -1:
 		exit(1)
 	""" doing arp every two seconds """
 	while(1):
 		#global lastnb
-		arp()
+		if args.m[0] == "arp":
+			arp()
+		if args.m[0] == "nmap":
+			#nmap
+			nmap()
 		print lastnb
 		nbtime = checker(lastnb, nbtime)
 		delTMP()
