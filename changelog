@@ -1,0 +1,13 @@
+#Box-notifier
+#@author : naper
+#tells you if a new client is connected to your router , designed for linux
+
+
+
+| 21 - feb 2015 - version 0.0.1 |
+
+-Fixing the first time popup bug
+-Use -i <interface> to execute box-notifier
+-adding arg parser
+-adding New disconnection notification 
+-Can check user list and send notifications about new connection
