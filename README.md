@@ -14,13 +14,18 @@ install box-notifier by using
   
 then execute the script using 
 
-    $ ./box-notifier.py -i <interface>
+    $ ./box-notifier.py -i <interface> -m <method>
+    
+example : 
+
+    $ ./box-notifier.py -i wlan0 -m arp
   
   
 available argument are 
 
 * -h          #show help
 * -i          #set an interface 
+* -m          #set methode
 * --verbose 
 
 
