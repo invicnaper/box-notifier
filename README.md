@@ -10,11 +10,11 @@ a tiny network monitoring tool that sends notification whenever someone connects
 #How to Use ?
 install box-notifier by using
 
-  python setup.py install
+    $ python setup.py install
   
 then execute the script using 
 
-  ./box-notifier.py -i <interface>
+    $ ./box-notifier.py -i <interface>
   
   
 available argument are 
