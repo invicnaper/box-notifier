@@ -14,7 +14,7 @@ install box-notifier by using
   
 then execute the script using 
 
-    $ ./box-notifier.py -i <interface> -m <method>
+    $ ./box-notifier.py -i <interface> -m <methode>
     
 example : 
 
